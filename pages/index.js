@@ -1,65 +1,302 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import React from "react";
+import Head from "next/head";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
-export default function Home() {
+import Layout from "../components/Layout";
+import styles from "../styles/form.module.css";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+
+const title = "お問い合わせフォーム";
+const description = "サンプル株式会社のお問い合わせフォームです。";
+
+const contactForm = () => {
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>申請フォーム</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          <a href="https://nextjs.org">Next.js!</a>へようこそ
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+    <Layout title={title} description={description}>
+      <div className={styles.pageHeader}>
+        <h2>{title}</h2>
+      </div>
+      <div className={styles.formArea}>
+        <Formik
+          initialValues={{
+            inquiryType: "",
+            service: [],
+            company: "",
+            name: "",
+            email: "",
+            address: "",
+            content: ""
+          }}
+          validationSchema={Yup.object({
+            inquiryType: Yup.string().required(
+              "お問い合わせ種別を選択してください"
+            ),
+            service: Yup.array().min(
+              1,
+              "検討中のサービスを1つ以上選択してください"
+            ),
+            name: Yup.string().required("ご担当者名は必須です"),
+            company: Yup.string().required("御社名は必須です"),
+            email: Yup.string()
+              .email("メールアドレスの形式に誤りがあります")
+              .required("メールアドレスは必須です"),
+            content: Yup.string().required("お問い合わせ内容は必須です")
+          })}
+          onSubmit={(values, { setSubmitting, resetForm }) => {
+            // 実際にはここにデータ送信処理など
+            alert(JSON.stringify(values, null, 2));
+            setSubmitting(false);
+            resetForm();
+          }}
         >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
-  )
-}
+          {({ isSubmitting, isValid, errors }) => (
+            <Form>
+              {!isValid && (
+                <Head>
+                  <title>
+                    {Object.keys(errors).length}箇所の入力エラーがあります -{" "}
+                    {title}
+                  </title>
+                </Head>
+              )}
+              <div className={styles.formField}>
+                <fieldset
+                  aria-required="true"
+                  aria-invalid={errors.inquiryType ? "true" : "false"}
+                >
+                  <legend
+                    className={styles.formFieldName}
+                    id="labelInquiryType"
+                  >
+                    お問い合わせ種別
+                    <span className={styles.formInputRequisite}>必須</span>
+                    <ErrorMessage name="inquiryType">
+                      {(msg) => (
+                        <span className={styles.invalidForm} aria-live="polite">
+                          <FontAwesomeIcon icon={faExclamationTriangle} />
+                          {msg}
+                        </span>
+                      )}
+                    </ErrorMessage>
+                  </legend>
+                  <div className={styles.formFieldInput}>
+                    <ul role="radiogroup" aria-labelledby="labelInquiryType">
+                      <li>
+                        <Field
+                          name="inquiryType"
+                          id="inquiryType01"
+                          type="radio"
+                          value="見積もり依頼"
+                        />
+                        <label htmlFor="inquiryType01">見積もり依頼</label>
+                      </li>
+                      <li>
+                        <Field
+                          name="inquiryType"
+                          id="inquiryType02"
+                          type="radio"
+                          value="採用に関するお問い合わせ"
+                        />
+                        <label htmlFor="inquiryType02">試用版申込み</label>
+                      </li>
+                      <li>
+                        <Field
+                          name="inquiryType"
+                          id="inquiryType03"
+                          type="radio"
+                          value="その他"
+                        />
+                        <label htmlFor="inquiryType03">その他</label>
+                      </li>
+                    </ul>
+                  </div>
+                </fieldset>
+              </div>
+              <div className={styles.formField}>
+                <fieldset
+                  aria-required="true"
+                  aria-invalid={errors.service ? "true" : "false"}
+                >
+                  <legend className={styles.formFieldName} id="labeService">
+                    検討中のサービス
+                    <span className={styles.formInputRequisite}>必須</span>
+                    <ErrorMessage name="service">
+                      {(msg) => (
+                        <span className={styles.invalidForm} aria-live="polite">
+                          <FontAwesomeIcon icon={faExclamationTriangle} />
+                          {msg}
+                        </span>
+                      )}
+                    </ErrorMessage>
+                  </legend>
+                  <div className={styles.formFieldInput}>
+                    <ul role="group" aria-labelledby="labeService">
+                      <li>
+                        <Field
+                          name="service"
+                          id="service01"
+                          type="checkbox"
+                          value="サービスA"
+                        />
+                        <label htmlFor="service01">サービスA</label>
+                      </li>
+                      <li>
+                        <Field
+                          name="service"
+                          id="service02"
+                          type="checkbox"
+                          value="サービスB"
+                        />
+                        <label htmlFor="service02">サービスB</label>
+                      </li>
+                      <li>
+                        <Field
+                          name="service"
+                          id="service03"
+                          type="checkbox"
+                          value="サービスC"
+                        />
+                        <label htmlFor="service03">サービスC</label>
+                      </li>
+                    </ul>
+                  </div>
+                </fieldset>
+              </div>
+              <div className={styles.formField}>
+                <div className={styles.formFieldName}>
+                  <label htmlFor="company">
+                    御社名
+                    <span className={styles.formInputRequisite}>必須</span>
+                    <ErrorMessage name="company">
+                      {(msg) => (
+                        <span className={styles.invalidForm} aria-live="polite">
+                          <FontAwesomeIcon icon={faExclamationTriangle} />
+                          {msg}
+                        </span>
+                      )}
+                    </ErrorMessage>
+                  </label>
+                </div>
+                <div className={styles.formFieldInput}>
+                  <Field
+                    name="company"
+                    id="company"
+                    type="text"
+                    placeholder="会社名や団体名をご記入ください"
+                    aria-required="true"
+                    aria-invalid={errors.company ? "true" : "false"}
+                  />
+                </div>
+              </div>
+              <div className={styles.formField}>
+                <div className={styles.formFieldName}>
+                  <label htmlFor="name">
+                    ご担当者名
+                    <span className={styles.formInputRequisite}>必須</span>
+                    <ErrorMessage name="name">
+                      {(msg) => (
+                        <span className={styles.invalidForm} aria-live="polite">
+                          <FontAwesomeIcon icon={faExclamationTriangle} />
+                          {msg}
+                        </span>
+                      )}
+                    </ErrorMessage>
+                  </label>
+                </div>
+                <div className={styles.formFieldInput}>
+                  <Field
+                    name="name"
+                    id="name"
+                    type="text"
+                    placeholder="ご担当者様のお名前をご記入ください"
+                    aria-required="true"
+                    aria-invalid={errors.name ? "true" : "false"}
+                  />
+                </div>
+              </div>
+              <div className={styles.formField}>
+                <div className={styles.formFieldName}>
+                  <label htmlFor="email">
+                    メールアドレス
+                    <span className={styles.formInputRequisite}>必須</span>
+                    <ErrorMessage name="email">
+                      {(msg) => (
+                        <span className={styles.invalidForm} aria-live="polite">
+                          <FontAwesomeIcon icon={faExclamationTriangle} />
+                          {msg}
+                        </span>
+                      )}
+                    </ErrorMessage>
+                  </label>
+                </div>
+                <div className={styles.formFieldInput}>
+                  <Field
+                    name="email"
+                    id="email"
+                    type="email"
+                    placeholder="メールアドレスを正しくご記入ください"
+                    aria-required="true"
+                    aria-invalid={errors.email ? "true" : "false"}
+                  />
+                </div>
+              </div>
+              <div className={styles.formField}>
+                <div className={styles.formFieldName}>
+                  <label htmlFor="address">会社住所</label>
+                </div>
+                <div className={styles.formFieldInput}>
+                  <Field
+                    name="address"
+                    id="address"
+                    component="textarea"
+                    placeholder="住所をご記入ください"
+                  />
+                </div>
+              </div>
+              <div className={styles.formField}>
+                <div className={styles.formFieldName}>
+                  <label htmlFor="content">
+                    お問い合わせ内容
+                    <span className={styles.formInputRequisite}>必須</span>
+                    <ErrorMessage name="content">
+                      {(msg) => (
+                        <span className={styles.invalidForm} aria-live="polite">
+                          <FontAwesomeIcon icon={faExclamationTriangle} />
+                          {msg}
+                        </span>
+                      )}
+                    </ErrorMessage>
+                  </label>
+                </div>
+                <div className={styles.formFieldInput}>
+                  <Field
+                    name="content"
+                    id="content"
+                    component="textarea"
+                    placeholder="お問い合わせ内容をご記入ください"
+                    aria-required="true"
+                    aria-invalid={errors.content ? "true" : "false"}
+                  />
+                </div>
+              </div>
+              <div className={styles.formSubmit}>
+                <button
+                  disabled={isSubmitting}
+                  type="submit"
+                  id="submit"
+                  title="入力内容を送信します"
+                >
+                  入力内容の送信
+                </button>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </div>
+    </Layout>
+  );
+};
+
+export default contactForm;
