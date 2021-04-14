@@ -5,7 +5,7 @@ import styles from '../styles/layout.module.css';
 
 const Layout = (props) => {
     const { title, description, children } = props
-    const siteTitle = 'デモ用サーバ申請フォーム'
+    const siteTitle = 'Intumit 社内申請'
 
     return (
         <div className={styles.container}>

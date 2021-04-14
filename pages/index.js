@@ -3,14 +3,14 @@ import Head from "next/head";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-import Layout from "../components/Layout";
 import styles from "../styles/form.module.css";
+import Layout from "../components/Layout";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
-const title = "お問い合わせフォーム";
-const description = "サンプル株式会社のお問い合わせフォームです。";
+const title = "Demo用サーバ申請フォーム";
+const description = "Demo用にサーバおよびテナントの発行を依頼するためのフォーム";
 
 const contactForm = () => {
   return (
@@ -21,7 +21,7 @@ const contactForm = () => {
       <div className={styles.formArea}>
         <Formik
           initialValues={{
-            inquiryType: "",
+            applications: "",
             service: [],
             company: "",
             name: "",
@@ -30,8 +30,8 @@ const contactForm = () => {
             content: ""
           }}
           validationSchema={Yup.object({
-            inquiryType: Yup.string().required(
-              "お問い合わせ種別を選択してください"
+            applications: Yup.string().required(
+              "対象アプリケーションを選択してください"
             ),
             service: Yup.array().min(
               1,
@@ -70,7 +70,7 @@ const contactForm = () => {
                     className={styles.formFieldName}
                     id="labelInquiryType"
                   >
-                    お問い合わせ種別
+                    対象アプリケーション
                     <span className={styles.formInputRequisite}>必須</span>
                     <ErrorMessage name="inquiryType">
                       {(msg) => (
@@ -88,18 +88,18 @@ const contactForm = () => {
                           name="inquiryType"
                           id="inquiryType01"
                           type="radio"
-                          value="見積もり依頼"
+                          value="SmartRobot"
                         />
-                        <label htmlFor="inquiryType01">見積もり依頼</label>
+                        <label htmlFor="inquiryType01">SmartRobot</label>
                       </li>
                       <li>
                         <Field
                           name="inquiryType"
                           id="inquiryType02"
                           type="radio"
-                          value="採用に関するお問い合わせ"
+                          value="SmartKMS"
                         />
-                        <label htmlFor="inquiryType02">試用版申込み</label>
+                        <label htmlFor="inquiryType02">SmartKMS</label>
                       </li>
                       <li>
                         <Field
